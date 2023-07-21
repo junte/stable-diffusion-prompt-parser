@@ -1,10 +1,10 @@
-package main
+package src
 
 import "fmt"
 
 func printPromptContents(contents []Prompt) string {
 	printed := ""
-	lastPromptIsTag := false
+	var lastPromptIsTag bool
 
 	for _, content := range contents {
 		if content.kind == "tag" && lastPromptIsTag {

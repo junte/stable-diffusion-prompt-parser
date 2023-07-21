@@ -1,4 +1,4 @@
-package main
+package src
 
 import (
 	"reflect"
@@ -155,7 +155,19 @@ func TestParsePromptContent(t *testing.T) {
 		{"<lora:file>", "<lora:file>", true, Prompt{kind: "lora", filename: "file"}},
 		{"<abc:xyz>", "<abc:xyz>", true, Prompt{}},
 		{"<abc:1.5>", "<abc:1.5>", true, Prompt{}},
-		{"abc:1.5", "abc:1.5", true, Prompt{kind: "ew", weight: 1.5, weightText: "1.5", contents: []Prompt{{kind: "tag", name: "abc", tokens: []string{"abc"}}}}},
+		{"abc:1.5", "abc:1.5", true, Prompt{
+			kind:       "ew",
+			weight:     1.5,
+			weightText: "1.5",
+			contents: []Prompt{
+				{
+					kind:   "tag",
+					name:   "abc",
+					tokens: []string{"abc"},
+				},
+			},
+		},
+		},
 	}
 
 	for _, test := range tests {
