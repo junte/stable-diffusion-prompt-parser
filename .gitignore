@@ -15,6 +15,9 @@ cover
 # Go workspace file
 go.work
 
+# Main
+main.go
+
 ### macOS ###
 # General
 .DS_Store

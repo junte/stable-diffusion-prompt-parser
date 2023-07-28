@@ -1,4 +1,4 @@
-package src
+package reader
 
 import "errors"
 
@@ -8,7 +8,8 @@ type TokenReader struct {
 	length int
 }
 
-func NewTokenReader(tokens []Token) *TokenReader {
+func NewTokenReader(input string) *TokenReader {
+	tokens := tokenizeInput(input)
 	return &TokenReader{
 		index:  0,
 		tokens: tokens,
@@ -16,14 +17,14 @@ func NewTokenReader(tokens []Token) *TokenReader {
 	}
 }
 
-func (reader *TokenReader) getToken() string {
+func (reader *TokenReader) GetToken() string {
 	if reader.index < reader.length {
 		return reader.tokens[reader.index].value
 	}
 	return ""
 }
 
-func (reader *TokenReader) getMultipleTokens(count int) ([]string, error) {
+func (reader *TokenReader) GetMultipleTokens(count int) ([]string, error) {
 	if reader.index+count <= reader.length {
 		values := make([]string, count)
 
@@ -35,7 +36,7 @@ func (reader *TokenReader) getMultipleTokens(count int) ([]string, error) {
 	return nil, errors.New("count out of range")
 }
 
-func (reader *TokenReader) nextToken() {
+func (reader *TokenReader) NextToken() {
 	if reader.index < reader.length {
 		reader.index++
 	}

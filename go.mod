@@ -1,4 +1,4 @@
-module stable-diffusion-prompt-parser
+module github.com/junte/stable-diffusion-prompt-parser
 
 go 1.20
 

@@ -1,16 +1,10 @@
-package src
+package reader
 
 import (
 	"strings"
 )
 
-type Token struct {
-	value    string
-	position int
-}
-
-func TokenizePrompt(input string) []Token {
-	var tokens []Token
+func tokenizeInput(input string) (tokens []Token) {
 	var current string
 	var startPosition, stopPosition int
 	var escaping bool
@@ -27,7 +21,7 @@ func TokenizePrompt(input string) []Token {
 		stopPosition++
 	}
 
-	append := func(char string) {
+	add := func(char string) {
 		current += char
 		skip()
 	}
@@ -40,21 +34,21 @@ func TokenizePrompt(input string) []Token {
 	for _, char := range input {
 		if escaping {
 			escaping = false
-			append(string(char))
+			add(string(char))
 		} else {
 			switch char {
 			case '\\':
 				escaping = true
-				append(string(char))
+				add(string(char))
 			case '(', ')', '[', ']', '<', '>', ':', ',', '|':
 				submit()
-				append(string(char))
+				add(string(char))
 				submit()
 			case ' ':
 				skip()
 				submit()
 			default:
-				append(string(char))
+				add(string(char))
 			}
 		}
 	}
