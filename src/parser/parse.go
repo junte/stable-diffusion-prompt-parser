@@ -24,25 +24,25 @@ func (parser *PromptParser) parseTagPrompt(reader *reader.TokenReader) (*Prompt,
 		token := reader.GetToken()
 		if helpers.Contains(invalidTokens, token) {
 			break
-		} else {
-			tokens = append(tokens, token)
-			reader.NextToken()
 		}
+
+		tokens = append(tokens, token)
+		reader.NextToken()
 	}
 
 	if len(tokens) == 0 {
 		return &Prompt{}, errors.New("tag expected")
-	} else {
-		for i, token := range tokens {
-			tokens[i] = parser.escapeToken(token)
-		}
-
-		return &Prompt{
-			kind:   tag,
-			name:   strings.Join(tokens, " "),
-			tokens: tokens,
-		}, nil
 	}
+
+	for i, token := range tokens {
+		tokens[i] = parser.escapeToken(token)
+	}
+
+	return &Prompt{
+		kind:   tag,
+		name:   strings.Join(tokens, " "),
+		tokens: tokens,
+	}, nil
 }
 
 func (parser *PromptParser) parsePositivePrompt(reader *reader.TokenReader) (*Prompt, error) {
@@ -56,24 +56,25 @@ func (parser *PromptParser) parsePositivePrompt(reader *reader.TokenReader) (*Pr
 		tokens, err := reader.GetMultipleTokens(2)
 		if err != nil {
 			break
-		} else {
-			colon, number := tokens[0], tokens[1]
-			if colon != ":" {
-				break
-			}
-			if _, err := strconv.ParseFloat(number, 64); err == nil {
-				break
-			}
-
-			// RECOVER: (a:b)
-			reader.NextToken()
-			newContents, err := parser.parsePromptContents(reader, false)
-			if err != nil {
-				return &Prompt{}, fmt.Errorf("%v", err)
-			}
-
-			contents = append(contents, newContents...)
 		}
+
+		colon, number := tokens[0], tokens[1]
+		if colon != ":" {
+			break
+		}
+
+		if _, err := strconv.ParseFloat(number, 64); err == nil {
+			break
+		}
+
+		// RECOVER: (a:b)
+		reader.NextToken()
+		newContents, err := parser.parsePromptContents(reader, false)
+		if err != nil {
+			return &Prompt{}, fmt.Errorf("%v", err)
+		}
+
+		contents = append(contents, newContents...)
 	}
 
 	if reader.GetToken() == ":" {
@@ -207,8 +208,8 @@ func (parser *PromptParser) parseAnglePrompt(reader *reader.TokenReader, kind st
 	if reader.GetToken() != ":" {
 		return &Prompt{}, errors.New(": expected")
 	}
-	reader.NextToken()
 
+	reader.NextToken()
 	filename, err := parser.parseFilename(reader)
 	if err != nil {
 		return &Prompt{}, err
@@ -263,10 +264,9 @@ func (parser *PromptParser) parsePromptContent(reader *reader.TokenReader, topLe
 				reader.NextToken()
 				return &Prompt{}, nil
 			}
-		} else {
-			reader.NextToken()
-			return &Prompt{}, nil
 		}
+		reader.NextToken()
+		return &Prompt{}, nil
 	case ",":
 		return &Prompt{}, errors.New("Prompt expected")
 	default:
