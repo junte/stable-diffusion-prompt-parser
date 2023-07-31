@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/junte/stable-diffusion-prompt-parser/src/helpers"
 	"github.com/junte/stable-diffusion-prompt-parser/src/reader"
+	"github.com/samber/lo"
 )
 
 func (parser *PromptParser) escapeToken(token string) string {
@@ -22,7 +22,7 @@ func (parser *PromptParser) parseTagPrompt(reader *reader.TokenReader) (*Prompt,
 	invalidTokens := []string{"(", ")", "[", "]", "<", ">", ":", ",", "|", ""}
 	for {
 		token := reader.GetToken()
-		if helpers.Contains(invalidTokens, token) {
+		if lo.Contains(invalidTokens, token) {
 			break
 		}
 
