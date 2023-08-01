@@ -192,6 +192,8 @@ func (parser *PromptParser) parseNumber(reader *reader.TokenReader, name string)
 		return 0, err
 	}
 
+	token = strings.ReplaceAll(token, ",", ".")
+	token = strings.ReplaceAll(token, " ", "")
 	number, err = strconv.ParseFloat(token, 64)
 	if err != nil {
 		return 0, fmt.Errorf(fmt.Sprintf("Incorrect %s format: %s", strings.ToLower(name), token))

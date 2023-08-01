@@ -265,6 +265,7 @@ func TestParseNumber(t *testing.T) {
 	}{
 		{"1", 1},
 		{"1.5", 1.5},
+		{".5", 0.5},
 		{"1. 5", 1.5},
 		{"0,5", 0.5},
 		{"0, 5", 0.5},
@@ -302,6 +303,33 @@ func TestParseAnglePrompt(t *testing.T) {
 			Prompt{
 				kind:       "hypernet",
 				filename:   "file",
+				multiplier: 0.5,
+			},
+		},
+		{
+			"<lora:file name:.5>",
+			"lora",
+			Prompt{
+				kind:       "lora",
+				filename:   "file name",
+				multiplier: 0.5,
+			},
+		},
+		{
+			"<lora:file.name-v.1.5:.5>",
+			"lora",
+			Prompt{
+				kind:       "lora",
+				filename:   "file.name-v.1.5",
+				multiplier: 0.5,
+			},
+		},
+		{
+			"< lora : ?file,name[v.1]  : .5 >",
+			"lora",
+			Prompt{
+				kind:       "lora",
+				filename:   "?file,name[v.1]",
 				multiplier: 0.5,
 			},
 		},
@@ -547,7 +575,8 @@ func TestPromptToString(t *testing.T) {
 		{"[ [abc ] ]", "[[abc]]"},
 		{"(abc:)", "(abc)"},
 		{"( abc : 1, 5 )", "(abc:1.5)"},
-		{"< lora : file : 1, 5 >", "<lora:file:1.5>"},
+		{"< lora : file name : .5 >", "<lora:file name:0.5>"},
+		{"< hypernet : file name>", "<hypernet:file name>"},
 	}
 
 	parser := NewPromptParser()

@@ -4,7 +4,7 @@ import "errors"
 
 type TokenReader struct {
 	index  int
-	tokens []Token
+	tokens []string
 	length int
 }
 
@@ -19,7 +19,7 @@ func NewTokenReader(input string) *TokenReader {
 
 func (reader *TokenReader) GetToken() string {
 	if reader.index < reader.length {
-		return reader.tokens[reader.index].value
+		return reader.tokens[reader.index]
 	}
 	return ""
 }
@@ -29,7 +29,7 @@ func (reader *TokenReader) GetMultipleTokens(count int) ([]string, error) {
 		values := make([]string, count)
 
 		for i := 0; i < count; i++ {
-			values[i] = reader.tokens[reader.index+i].value
+			values[i] = reader.tokens[reader.index+i]
 		}
 		return values, nil
 	}

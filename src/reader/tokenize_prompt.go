@@ -1,58 +1,54 @@
 package reader
 
-import (
-	"strings"
-)
+import "strings"
 
-func tokenizeInput(input string) (tokens []Token) {
-	var current string
-	var startPosition, stopPosition int
-	var escaping bool
+func addTokens(tokens *[]string, input *string, start *int, end *int) {
+	if *end <= len(*input) && *start < *end {
+		*tokens = append(*tokens, strings.Trim((*input)[*start:*end], " "))
+	}
+}
 
-	submit := func() {
-		if current != "" {
-			tokens = append(tokens, Token{current, startPosition})
-			current = ""
+func tokenizeModel(tokens *[]string, input *string, start *int, end *int) {
+	for {
+		if *end >= len(*input) {
+			break
 		}
-		startPosition = stopPosition
+
+		char := (*input)[*end]
+		switch char {
+		case '<', ':', '>':
+			addTokens(tokens, input, start, end)
+			*tokens = append(*tokens, string(char))
+			*start = *end + 1
+		}
+
+		if char == '>' {
+			break
+		}
+
+		*end++
 	}
+}
 
-	skip := func() {
-		stopPosition++
-	}
-
-	add := func(char string) {
-		current += char
-		skip()
-	}
-
-	input = strings.ReplaceAll(input, "，", ",")
-	input = strings.ReplaceAll(input, "：", ":")
-	input = strings.ReplaceAll(input, "（", "(")
-	input = strings.ReplaceAll(input, "）", ")")
-
-	for _, char := range input {
-		if escaping {
-			escaping = false
-			add(string(char))
-		} else {
-			switch char {
-			case '\\':
-				escaping = true
-				add(string(char))
-			case '(', ')', '[', ']', '<', '>', ':', ',', '|':
-				submit()
-				add(string(char))
-				submit()
-			case ' ':
-				skip()
-				submit()
-			default:
-				add(string(char))
-			}
+func tokenizeInput(input string) (tokens []string) {
+	var current int
+	var index int
+	for index = 0; index < len(input); index++ {
+		char := input[index]
+		switch char {
+		case '(', ')', '[', ']', ':', ',', '|':
+			addTokens(&tokens, &input, &current, &index)
+			tokens = append(tokens, string(char))
+			current = index + 1
+		case '<':
+			tokenizeModel(&tokens, &input, &current, &index)
+		case ' ':
+			addTokens(&tokens, &input, &current, &index)
+			current = index + 1
 		}
 	}
 
-	submit()
+	addTokens(&tokens, &input, &current, &index)
+
 	return tokens
 }

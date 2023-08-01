@@ -10,56 +10,39 @@ import (
 func TestTokenizePrompt(t *testing.T) {
 	tests := []struct {
 		input  string
-		result []Token
+		result []string
 	}{
 		{
 			"abc",
-			[]Token{
-				{"abc", 0},
-			},
+			[]string{"abc"},
 		},
 		{
 			"abc xyz",
-			[]Token{
-				{"abc", 0},
-				{"xyz", 4},
-			},
+			[]string{"abc", "xyz"},
 		},
 		{
 			"abc, xyz",
-			[]Token{
-				{"abc", 0},
-				{",", 3},
-				{"xyz", 5},
-			},
+			[]string{"abc", ",", "xyz"},
 		},
 		{
 			"(abc)",
-			[]Token{
-				{"(", 0},
-				{"abc", 1},
-				{")", 4},
-			},
+			[]string{"(", "abc", ")"},
 		},
 		{
-			"[abc:0.5]",
-			[]Token{
-				{"[", 0},
-				{"abc", 1},
-				{":", 4},
-				{"0.5", 5},
-				{"]", 8},
-			},
+			"((abc))",
+			[]string{"(", "(", "abc", ")", ")"},
 		},
 		{
-			"(abc|xyz)",
-			[]Token{
-				{"(", 0},
-				{"abc", 1},
-				{"|", 4},
-				{"xyz", 5},
-				{")", 8},
-			},
+			"(abc:0.5)",
+			[]string{"(", "abc", ":", "0.5", ")"},
+		},
+		{
+			"[[abc,xyz]]",
+			[]string{"[", "[", "abc", ",", "xyz", "]", "]"},
+		},
+		{
+			"<lora:file name:1.5>",
+			[]string{"<", "lora", ":", "file name", ":", "1.5", ">"},
 		},
 	}
 
