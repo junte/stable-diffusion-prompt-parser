@@ -1,5 +1,6 @@
 ### Go ###
 # Binaries for programs and plugins
+bin
 *.exe
 *.exe~
 *.dll
@@ -16,7 +17,7 @@ cover
 go.work
 
 # Main
-main.go
+/main.go
 
 ### macOS ###
 # General

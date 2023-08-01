@@ -5,7 +5,7 @@ Stable Diffusion Prompt Parser
 ## Installation
 
 ```bash
-go get -u github.com/junte/stable-diffusion-prompt-parser 
+$ go get -u github.com/junte/stable-diffusion-prompt-parser 
 ```
 
 ## Supported prompt syntax
@@ -31,9 +31,9 @@ func main() {
     parsed, err := parser.ParsePrompt(prompt)
 }
 ```
+parsed:
 
 ```json
-# parsed
 {
   "Tags": [
     {
@@ -77,7 +77,27 @@ func main() {
     beautified, err := parser.BeautifyPrompt(prompt)
 }
 ```
+beautified:
 ```
-# beautified
 landscape, moon (realistic, detailed:1.5) <hypernet:file:1.5>
+```
+
+## Build
+```bash
+$ make build-mac
+
+## Supported commands
+# make build-linux
+# make build-linux64
+# make build-mac
+# make build-mac32
+```
+
+### Usage
+```bash
+# Parsing
+$ ./bin/parse "landscape from the Moon, (realistic, detailed:1.5), <lora:file>, <hypernet:file:1.5>"
+
+# Beautifying
+$ ./bin/beautify "landscape,,,, moon, ( realistic,detailed:1, 5), <hypernet:file:1. 5>"
 ```
