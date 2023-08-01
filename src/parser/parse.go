@@ -17,7 +17,7 @@ func (parser *PromptParser) escapeToken(token string) string {
 	return regexp.MustCompile(`\\(.)`).ReplaceAllString(token, "$1")
 }
 
-func (parser *PromptParser) parseTagPrompt(reader *reader.TokenReader) (*Prompt, error) {
+func (parser *PromptParser) parseTagPrompt(reader *reader.TokenReader) (*prompt, error) {
 	tokens := []string{}
 	invalidTokens := []string{"(", ")", "[", "]", "<", ">", ":", ",", "|", ""}
 	for {
@@ -31,25 +31,25 @@ func (parser *PromptParser) parseTagPrompt(reader *reader.TokenReader) (*Prompt,
 	}
 
 	if len(tokens) == 0 {
-		return &Prompt{}, errors.New("tag expected")
+		return &prompt{}, errors.New("tag expected")
 	}
 
 	for i, token := range tokens {
 		tokens[i] = parser.escapeToken(token)
 	}
 
-	return &Prompt{
+	return &prompt{
 		kind:   tag,
 		name:   strings.Join(tokens, " "),
 		tokens: tokens,
 	}, nil
 }
 
-func (parser *PromptParser) parsePositivePrompt(reader *reader.TokenReader) (*Prompt, error) {
+func (parser *PromptParser) parsePositivePrompt(reader *reader.TokenReader) (*prompt, error) {
 	reader.NextToken()
 	contents, err := parser.parsePromptContents(reader, false)
 	if err != nil {
-		return &Prompt{}, fmt.Errorf("%v", err)
+		return &prompt{}, fmt.Errorf("%v", err)
 	}
 
 	for {
@@ -71,7 +71,7 @@ func (parser *PromptParser) parsePositivePrompt(reader *reader.TokenReader) (*Pr
 		reader.NextToken()
 		newContents, err := parser.parsePromptContents(reader, false)
 		if err != nil {
-			return &Prompt{}, fmt.Errorf("%v", err)
+			return &prompt{}, fmt.Errorf("%v", err)
 		}
 
 		contents = append(contents, newContents...)
@@ -81,7 +81,7 @@ func (parser *PromptParser) parsePositivePrompt(reader *reader.TokenReader) (*Pr
 		reader.NextToken()
 		weight, err := parser.parseNumber(reader, "weight")
 		if err != nil {
-			return &Prompt{}, fmt.Errorf("%v", err)
+			return &prompt{}, fmt.Errorf("%v", err)
 		}
 
 		if reader.GetToken() == "," {
@@ -93,7 +93,7 @@ func (parser *PromptParser) parsePositivePrompt(reader *reader.TokenReader) (*Pr
 			reader.NextToken()
 		}
 
-		return &Prompt{
+		return &prompt{
 			kind:     customWeight,
 			weight:   weight,
 			contents: contents,
@@ -104,24 +104,24 @@ func (parser *PromptParser) parsePositivePrompt(reader *reader.TokenReader) (*Pr
 		reader.NextToken()
 	}
 
-	return &Prompt{
+	return &prompt{
 		kind:     positiveWeight,
 		contents: contents,
 	}, nil
 }
 
-func (parser *PromptParser) parseNegativePrompt(reader *reader.TokenReader) (*Prompt, error) {
+func (parser *PromptParser) parseNegativePrompt(reader *reader.TokenReader) (*prompt, error) {
 	reader.NextToken()
 	contents, err := parser.parsePromptContents(reader, false)
 	if err != nil {
-		return &Prompt{}, fmt.Errorf("%v", err)
+		return &prompt{}, fmt.Errorf("%v", err)
 	}
 
 	if reader.GetToken() == "]" || reader.GetToken() == "}" || reader.GetToken() == "" {
 		reader.NextToken()
 	}
 
-	return &Prompt{
+	return &prompt{
 		kind:     negativeWeight,
 		contents: contents,
 	}, nil
@@ -204,29 +204,29 @@ func (parser *PromptParser) parseNumber(reader *reader.TokenReader, name string)
 	return number, nil
 }
 
-func (parser *PromptParser) parseAnglePrompt(reader *reader.TokenReader, kind string) (*Prompt, error) {
+func (parser *PromptParser) parseAnglePrompt(reader *reader.TokenReader, kind string) (*prompt, error) {
 	reader.NextToken()
 	reader.NextToken()
 	if reader.GetToken() != ":" {
-		return &Prompt{}, errors.New(": expected")
+		return &prompt{}, errors.New(": expected")
 	}
 
 	reader.NextToken()
 	filename, err := parser.parseFilename(reader)
 	if err != nil {
-		return &Prompt{}, err
+		return &prompt{}, err
 	}
 
 	if reader.GetToken() == ":" {
 		reader.NextToken()
 		multiplier, err := parser.parseNumber(reader, "multiplier")
 		if err != nil {
-			return &Prompt{}, err
+			return &prompt{}, err
 		}
 
 		if reader.GetToken() == ">" {
 			reader.NextToken()
-			return &Prompt{
+			return &prompt{
 				kind:       kind,
 				filename:   filename,
 				multiplier: multiplier,
@@ -236,17 +236,17 @@ func (parser *PromptParser) parseAnglePrompt(reader *reader.TokenReader, kind st
 
 	if reader.GetToken() == ">" {
 		reader.NextToken()
-		return &Prompt{
+		return &prompt{
 			kind:     kind,
 			filename: filename,
 		}, nil
 	}
 	reader.NextToken()
 
-	return &Prompt{}, errors.New("> expected")
+	return &prompt{}, errors.New("> expected")
 }
 
-func (parser *PromptParser) parsePromptContent(reader *reader.TokenReader, topLevel bool) (*Prompt, error) {
+func (parser *PromptParser) parsePromptContent(reader *reader.TokenReader, topLevel bool) (*prompt, error) {
 	token := reader.GetToken()
 	switch token {
 	case "(":
@@ -264,17 +264,17 @@ func (parser *PromptParser) parsePromptContent(reader *reader.TokenReader, topLe
 			default:
 				// RECOVER: unknown model name
 				reader.NextToken()
-				return &Prompt{}, nil
+				return &prompt{}, nil
 			}
 		}
 		reader.NextToken()
-		return &Prompt{}, nil
+		return &prompt{}, nil
 	case ",":
-		return &Prompt{}, errors.New("Prompt expected")
+		return &prompt{}, errors.New("prompt expected")
 	default:
 		tagPrompt, err := parser.parseTagPrompt(reader)
 		if err != nil {
-			return &Prompt{}, err
+			return &prompt{}, err
 		}
 
 		if topLevel && reader.GetToken() == ":" {
@@ -286,10 +286,10 @@ func (parser *PromptParser) parsePromptContent(reader *reader.TokenReader, topLe
 					reader.NextToken()
 					weight, err := parser.parseNumber(reader, "weight")
 					if err == nil {
-						return &Prompt{
+						return &prompt{
 							kind:     customWeight,
 							weight:   weight,
-							contents: []Prompt{*tagPrompt},
+							contents: []*prompt{tagPrompt},
 						}, nil
 					}
 				}
@@ -301,7 +301,7 @@ func (parser *PromptParser) parsePromptContent(reader *reader.TokenReader, topLe
 	}
 }
 
-func (parser *PromptParser) parsePromptContents(reader *reader.TokenReader, topLevel bool) (contents []Prompt, err error) {
+func (parser *PromptParser) parsePromptContents(reader *reader.TokenReader, topLevel bool) (contents []*prompt, err error) {
 	for {
 		token := reader.GetToken()
 		switch token {
@@ -315,16 +315,16 @@ func (parser *PromptParser) parsePromptContents(reader *reader.TokenReader, topL
 				return nil, fmt.Errorf("%v", err)
 			}
 
-			if !reflect.DeepEqual(Prompt{}, *content) {
-				contents = append(contents, *content)
+			if !reflect.DeepEqual(prompt{}, *content) {
+				contents = append(contents, content)
 			}
 		}
 	}
 }
 
-func (parser *PromptParser) parse(input string) (*Prompt, error) {
+func (parser *PromptParser) parse(input string) (*prompt, error) {
 	input = strings.ReplaceAll(input, "|", ",")
-	prompt := &Prompt{}
+	prompt := &prompt{}
 	reader := reader.NewTokenReader(input)
 
 	for {
@@ -339,7 +339,7 @@ func (parser *PromptParser) parse(input string) (*Prompt, error) {
 		default:
 			contents, err := parser.parsePromptContents(reader, true)
 			if err != nil {
-				return &Prompt{}, fmt.Errorf("%v", err)
+				return prompt, fmt.Errorf("%v", err)
 			}
 
 			prompt.contents = append(prompt.contents, contents...)

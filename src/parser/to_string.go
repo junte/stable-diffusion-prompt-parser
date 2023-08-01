@@ -2,7 +2,7 @@ package parser
 
 import "fmt"
 
-func (parser *PromptParser) contentsToString(contents []Prompt) (result string) {
+func (parser *PromptParser) contentsToString(contents []*prompt) (result string) {
 	var lastPromptIsTag bool
 
 	for _, content := range contents {
@@ -39,6 +39,6 @@ func (parser *PromptParser) contentsToString(contents []Prompt) (result string) 
 	return result
 }
 
-func (parser *PromptParser) toString(prompt *Prompt) string {
+func (parser *PromptParser) toString(prompt *prompt) string {
 	return parser.contentsToString(prompt.contents)
 }

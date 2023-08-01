@@ -1,13 +1,13 @@
 package parser
 
-type Prompt struct {
+type prompt struct {
 	kind       string
 	name       string
 	filename   string
 	multiplier float64
 	weight     float64
 	tokens     []string
-	contents   []Prompt
+	contents   []*prompt
 }
 
 type PromptTag struct {
@@ -21,7 +21,7 @@ type PromptModel struct {
 }
 
 type ParsedPrompt struct {
-	Tags      []PromptTag
-	Loras     []PromptModel
-	Hypernets []PromptModel
+	Tags      []*PromptTag
+	Loras     []*PromptModel
+	Hypernets []*PromptModel
 }

@@ -21,11 +21,11 @@ func TestEscapeToken(t *testing.T) {
 func TestParseTagPrompt(t *testing.T) {
 	tests := []struct {
 		input  string
-		result Prompt
+		result prompt
 	}{
 		{
 			"abc",
-			Prompt{
+			prompt{
 				kind:   "tag",
 				name:   "abc",
 				tokens: []string{"abc"},
@@ -33,7 +33,7 @@ func TestParseTagPrompt(t *testing.T) {
 		},
 		{
 			"abc xyz",
-			Prompt{
+			prompt{
 				kind:   "tag",
 				name:   "abc xyz",
 				tokens: []string{"abc", "xyz"},
@@ -57,20 +57,20 @@ func TestParseTagPrompt(t *testing.T) {
 		reader := reader.NewTokenReader(input)
 		result, err := parser.parseTagPrompt(reader)
 		assert.EqualError(t, err, "tag expected")
-		assert.True(t, reflect.DeepEqual(*result, Prompt{}))
+		assert.True(t, reflect.DeepEqual(*result, prompt{}))
 	})
 }
 
 func TestParsePositivePrompt(t *testing.T) {
 	tests := []struct {
 		input  string
-		result Prompt
+		result prompt
 	}{
 		{
 			"(abc)",
-			Prompt{
+			prompt{
 				kind: "pw",
-				contents: []Prompt{
+				contents: []*prompt{
 					{
 						kind:   "tag",
 						name:   "abc",
@@ -81,12 +81,12 @@ func TestParsePositivePrompt(t *testing.T) {
 		},
 		{
 			"((abc))",
-			Prompt{
+			prompt{
 				kind: "pw",
-				contents: []Prompt{
+				contents: []*prompt{
 					{
 						kind: "pw",
-						contents: []Prompt{
+						contents: []*prompt{
 							{
 								kind:   "tag",
 								name:   "abc",
@@ -99,9 +99,9 @@ func TestParsePositivePrompt(t *testing.T) {
 		},
 		{
 			"(abc, xyz)",
-			Prompt{
+			prompt{
 				kind: "pw",
-				contents: []Prompt{
+				contents: []*prompt{
 					{
 						kind:   "tag",
 						name:   "abc",
@@ -117,9 +117,9 @@ func TestParsePositivePrompt(t *testing.T) {
 		},
 		{
 			"(abc:xyz)",
-			Prompt{
+			prompt{
 				kind: "pw",
-				contents: []Prompt{
+				contents: []*prompt{
 					{
 						kind:   "tag",
 						name:   "abc",
@@ -134,10 +134,10 @@ func TestParsePositivePrompt(t *testing.T) {
 		},
 		{
 			"(abc:1.5)",
-			Prompt{
+			prompt{
 				kind:   "cw",
 				weight: 1.5,
-				contents: []Prompt{
+				contents: []*prompt{
 					{
 						kind:   "tag",
 						name:   "abc",
@@ -148,10 +148,10 @@ func TestParsePositivePrompt(t *testing.T) {
 		},
 		{
 			"(abc:1.5, xyz)",
-			Prompt{
+			prompt{
 				kind:   "cw",
 				weight: 1.5,
-				contents: []Prompt{
+				contents: []*prompt{
 					{
 						kind:   "tag",
 						name:   "abc",
@@ -177,13 +177,13 @@ func TestParsePositivePrompt(t *testing.T) {
 func TestParseNegativePrompt(t *testing.T) {
 	tests := []struct {
 		input  string
-		result Prompt
+		result prompt
 	}{
 		{
 			"[abc]",
-			Prompt{
+			prompt{
 				kind: "nw",
-				contents: []Prompt{
+				contents: []*prompt{
 					{
 						kind:   "tag",
 						name:   "abc",
@@ -194,12 +194,12 @@ func TestParseNegativePrompt(t *testing.T) {
 		},
 		{
 			"[[abc]]",
-			Prompt{
+			prompt{
 				kind: "nw",
-				contents: []Prompt{
+				contents: []*prompt{
 					{
 						kind: "nw",
-						contents: []Prompt{
+						contents: []*prompt{
 							{
 								kind:   "tag",
 								name:   "abc",
@@ -212,9 +212,9 @@ func TestParseNegativePrompt(t *testing.T) {
 		},
 		{
 			"[abc, xyz]",
-			Prompt{
+			prompt{
 				kind: "nw",
-				contents: []Prompt{
+				contents: []*prompt{
 					{
 						kind:   "tag",
 						name:   "abc",
@@ -287,12 +287,12 @@ func TestParseAnglePrompt(t *testing.T) {
 	tests := []struct {
 		input     string
 		inputName string
-		result    Prompt
+		result    prompt
 	}{
 		{
 			"<lora:file>",
 			"lora",
-			Prompt{
+			prompt{
 				kind:     "lora",
 				filename: "file",
 			},
@@ -300,7 +300,7 @@ func TestParseAnglePrompt(t *testing.T) {
 		{
 			"<hypernet:file:0.5>",
 			"hypernet",
-			Prompt{
+			prompt{
 				kind:       "hypernet",
 				filename:   "file",
 				multiplier: 0.5,
@@ -309,7 +309,7 @@ func TestParseAnglePrompt(t *testing.T) {
 		{
 			"<lora:file name:.5>",
 			"lora",
-			Prompt{
+			prompt{
 				kind:       "lora",
 				filename:   "file name",
 				multiplier: 0.5,
@@ -318,7 +318,7 @@ func TestParseAnglePrompt(t *testing.T) {
 		{
 			"<lora:file.name-v.1.5:.5>",
 			"lora",
-			Prompt{
+			prompt{
 				kind:       "lora",
 				filename:   "file.name-v.1.5",
 				multiplier: 0.5,
@@ -327,7 +327,7 @@ func TestParseAnglePrompt(t *testing.T) {
 		{
 			"< lora : ?file,name[v.1]  : .5 >",
 			"lora",
-			Prompt{
+			prompt{
 				kind:       "lora",
 				filename:   "?file,name[v.1]",
 				multiplier: 0.5,
@@ -351,12 +351,12 @@ func TestParsePromptContent(t *testing.T) {
 	tests := []struct {
 		input         string
 		inputTopLevel bool
-		result        Prompt
+		result        prompt
 	}{
 		{
 			"<lora:file>",
 			true,
-			Prompt{
+			prompt{
 				kind:     "lora",
 				filename: "file",
 			},
@@ -364,25 +364,25 @@ func TestParsePromptContent(t *testing.T) {
 		{
 			"<",
 			true,
-			Prompt{},
+			prompt{},
 		},
 		{
 			"<abc:xyz>",
 			true,
-			Prompt{},
+			prompt{},
 		},
 		{
 			"<abc:1.5>",
 			true,
-			Prompt{},
+			prompt{},
 		},
 		{
 			"abc:1.5",
 			true,
-			Prompt{
+			prompt{
 				kind:   "cw",
 				weight: 1.5,
-				contents: []Prompt{
+				contents: []*prompt{
 					{
 						kind:   "tag",
 						name:   "abc",
@@ -413,49 +413,49 @@ func TestParsePrompt(t *testing.T) {
 		{
 			"abc",
 			ParsedPrompt{
-				Tags: []PromptTag{{Tag: "abc", Weight: 1}},
+				Tags: []*PromptTag{{Tag: "abc", Weight: 1}},
 			},
 		},
 		{
 			"(abc)",
 			ParsedPrompt{
-				Tags: []PromptTag{{Tag: "abc", Weight: 1.1}},
+				Tags: []*PromptTag{{Tag: "abc", Weight: 1.1}},
 			},
 		},
 		{
 			"((abc))",
 			ParsedPrompt{
-				Tags: []PromptTag{{Tag: "abc", Weight: 1.2100000000000002}},
+				Tags: []*PromptTag{{Tag: "abc", Weight: 1.2100000000000002}},
 			},
 		},
 		{
 			"(abc:1.5)",
 			ParsedPrompt{
-				Tags: []PromptTag{{Tag: "abc", Weight: 1.5}},
+				Tags: []*PromptTag{{Tag: "abc", Weight: 1.5}},
 			},
 		},
 		{
 			"[abc]",
 			ParsedPrompt{
-				Tags: []PromptTag{{Tag: "abc", Weight: 0.9090909090909091}},
+				Tags: []*PromptTag{{Tag: "abc", Weight: 0.9090909090909091}},
 			},
 		},
 		{
 			"[[abc]]",
 			ParsedPrompt{
-				Tags: []PromptTag{{Tag: "abc", Weight: 0.8264462809917354}},
+				Tags: []*PromptTag{{Tag: "abc", Weight: 0.8264462809917354}},
 			},
 		},
 		{
 			"abc xyz",
 			ParsedPrompt{
-				Tags: []PromptTag{{Tag: "abc xyz", Weight: 1}},
+				Tags: []*PromptTag{{Tag: "abc xyz", Weight: 1}},
 			},
 		},
 		{
 			"abc, xyz",
 			ParsedPrompt{
-				Tags: []PromptTag{
+				Tags: []*PromptTag{
 					{
 						Tag:    "abc",
 						Weight: 1,
@@ -470,7 +470,7 @@ func TestParsePrompt(t *testing.T) {
 		{
 			"(abc, xyz)",
 			ParsedPrompt{
-				Tags: []PromptTag{
+				Tags: []*PromptTag{
 					{
 						Tag:    "abc",
 						Weight: 1.1,
@@ -485,31 +485,31 @@ func TestParsePrompt(t *testing.T) {
 		{
 			"<lora:file>",
 			ParsedPrompt{
-				Loras: []PromptModel{{Filename: "file", Multiplier: 1}},
+				Loras: []*PromptModel{{Filename: "file", Multiplier: 1}},
 			},
 		},
 		{
 			"<lora:file:0.5>",
 			ParsedPrompt{
-				Loras: []PromptModel{{Filename: "file", Multiplier: 0.5}},
+				Loras: []*PromptModel{{Filename: "file", Multiplier: 0.5}},
 			},
 		},
 		{
 			"<hypernet:file>",
 			ParsedPrompt{
-				Hypernets: []PromptModel{{Filename: "file", Multiplier: 1}},
+				Hypernets: []*PromptModel{{Filename: "file", Multiplier: 1}},
 			},
 		},
 		{
 			"<hypernet:file:1.5>",
 			ParsedPrompt{
-				Hypernets: []PromptModel{{Filename: "file", Multiplier: 1.5}},
+				Hypernets: []*PromptModel{{Filename: "file", Multiplier: 1.5}},
 			},
 		},
 		{
 			"abc, [[mno]], (xyz), <hypernet:file>, <lora:file:1.5>",
 			ParsedPrompt{
-				Tags: []PromptTag{
+				Tags: []*PromptTag{
 					{
 						Tag:    "abc",
 						Weight: 1,
@@ -523,13 +523,13 @@ func TestParsePrompt(t *testing.T) {
 						Weight: 1.1,
 					},
 				},
-				Loras: []PromptModel{
+				Loras: []*PromptModel{
 					{
 						Filename:   "file",
 						Multiplier: 1.5,
 					},
 				},
-				Hypernets: []PromptModel{
+				Hypernets: []*PromptModel{
 					{
 						Filename:   "file",
 						Multiplier: 1,
@@ -540,7 +540,7 @@ func TestParsePrompt(t *testing.T) {
 		{
 			"abc,,,xyz",
 			ParsedPrompt{
-				Tags: []PromptTag{
+				Tags: []*PromptTag{
 					{
 						Tag:    "abc",
 						Weight: 1,
