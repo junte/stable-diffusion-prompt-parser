@@ -1,6 +1,5 @@
 SRC = ./src/...
 COVER = cover/cover
-LINUX32 = GOOS=linux GOARCH=386
 LINUX64 = GOOS=linux GOARCH=amd64
 MAC64 = GOOS=darwin GOARCH=arm64
 
