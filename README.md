@@ -95,9 +95,10 @@ $ make build-mac
 
 ### Usage
 ```bash
-# Parsing
-$ ./bin/parse "landscape from the Moon, (realistic, detailed:1.5), <lora:file>, <hypernet:file:1.5>"
+$ ./bin/parse < <(echo "landscape from the Moon, (realistic, detailed:1.5), <lora:file>, <hypernet:file:1.5>")
 
-# Beautifying
-$ ./bin/beautify "landscape,,,, moon, ( realistic,detailed:1, 5), <hypernet:file:1. 5>"
+# or
+
+$ ./bin/parse 
+$ "landscape,,,, moon, ( realistic,detailed:1, 5), <hypernet:file:1. 5>"
 ```

@@ -9,16 +9,16 @@ run:
 	go run .
 
 build-linux32:
-	$(LINUX32) go build -o bin/parse src/parse/main.go && $(LINUX32) go build -o bin/beautify src/beautify/main.go
+	$(LINUX32) go build -o bin/parse main.go
 
 build-linux:
-	$(LINUX64) go build -o bin/parse src/parse/main.go && $(LINUX64) go build -o bin/beautify src/beautify/main.go
-
+	$(LINUX64) go build -o bin/parse main.go
+	
 build-mac32:
-	$(MAC32) go build -o bin/parse src/parse/main.go && $(MAC32) go build -o bin/beautify src/beautify/main.go
+	$(MAC32) go build -o bin/parse main.go
 
 build-mac:
-	$(MAC64) go build -o bin/parse src/parse/main.go && $(MAC64) go build -o bin/beautify src/beautify/main.go
+	$(MAC64) go build -o bin/parse main.go
 
 test:
 	go test -p 1 $(SRC)
