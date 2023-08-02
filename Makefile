@@ -2,20 +2,13 @@ SRC = ./src/...
 COVER = cover/cover
 LINUX32 = GOOS=linux GOARCH=386
 LINUX64 = GOOS=linux GOARCH=amd64
-MAC32 = GOOS=darwin GOARCH=386
-MAC64 = GOOS=darwin GOARCH=amd64
+MAC64 = GOOS=darwin GOARCH=arm64
 
 run:
 	go run .
 
-build-linux32:
-	$(LINUX32) go build -o bin/parse main.go
-
 build-linux:
 	$(LINUX64) go build -o bin/parse main.go
-	
-build-mac32:
-	$(MAC32) go build -o bin/parse main.go
 
 build-mac:
 	$(MAC64) go build -o bin/parse main.go

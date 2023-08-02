@@ -83,15 +83,20 @@ landscape, moon (realistic, detailed:1.5) <hypernet:file:1.5>
 ```
 
 ## Build
+Use following make rules for building 
 ```bash
-$ make build-mac
+## macos arm64
+$ make build-mac 
 
-## Supported commands
-# make build-linux
-# make build-linux64
-# make build-mac
-# make build-mac32
+## linux amd64
+$ make build-linux
 ```
+or use following command to build for desirable platform (use valid combinations of $GOOS and $GOARCH from here: https://go.dev/doc/install/source#environment)
+
+```bash
+$ GOOS=linux GOARCH=386 go build -o bin/parse main.go
+```
+
 
 ### Usage
 ```bash
