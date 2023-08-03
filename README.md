@@ -105,5 +105,5 @@ $ ./bin/parse < <(echo "landscape from the Moon, (realistic, detailed:1.5), <lor
 # or
 
 $ ./bin/parse 
-$ "landscape,,,, moon, ( realistic,detailed:1, 5), <hypernet:file:1. 5>"
+$ landscape,,,, moon, ( realistic,detailed:1, 5), <hypernet:file:1. 5>
 ```
