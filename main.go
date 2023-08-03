@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"regexp"
 
 	"github.com/junte/stable-diffusion-prompt-parser/src/parser"
 )
@@ -13,14 +14,29 @@ import (
 type Output struct {
 	Evaluated  *parser.ParsedPrompt `json:"evaluated"`
 	Beautified string               `json:"beautified"`
+	Cleaned    string               `json:"cleaned"`
 }
 
-func toIndentedJson(i *Output, prefix string, indent string) ([]byte, error) {
+func toIndentedJson(output *Output, prefix string, indent string) ([]byte, error) {
 	buffer := &bytes.Buffer{}
 	encoder := json.NewEncoder(buffer)
 	encoder.SetEscapeHTML(false)
 	encoder.SetIndent(prefix, indent)
-	err := encoder.Encode(i)
+
+	// intialize slices to get rid of nulls in json
+	if output.Evaluated.Tags == nil {
+		output.Evaluated.Tags = make([]*parser.PromptTag, 0)
+	}
+
+	if output.Evaluated.Hypernets == nil {
+		output.Evaluated.Hypernets = make([]*parser.PromptModel, 0)
+	}
+
+	if output.Evaluated.Loras == nil {
+		output.Evaluated.Loras = make([]*parser.PromptModel, 0)
+	}
+
+	err := encoder.Encode(output)
 
 	return bytes.TrimRight(buffer.Bytes(), "\n"), err
 }
@@ -44,9 +60,11 @@ func main() {
 		os.Exit(1)
 	}
 
+	regex := regexp.MustCompile(` ?<.*> ?`)
 	output := Output{
 		Evaluated:  parsed,
 		Beautified: beautified,
+		Cleaned:    regex.ReplaceAllString(beautified, ", "),
 	}
 
 	marshalled, err := toIndentedJson(&output, "", "  ")

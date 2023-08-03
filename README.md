@@ -94,7 +94,7 @@ $ make build-linux
 or use following command to build for desirable platform (use valid combinations of $GOOS and $GOARCH from here: https://go.dev/doc/install/source#environment)
 
 ```bash
-$ GOOS=linux GOARCH=386 go build -o bin/parse main.go
+$ GOOS=linux GOARCH=386 go build -ldflags "-s -w" -o bin/parse main.go
 ```
 
 
