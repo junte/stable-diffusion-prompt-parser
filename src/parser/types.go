@@ -11,17 +11,17 @@ type prompt struct {
 }
 
 type PromptTag struct {
-	Tag    string
-	Weight float64
+	Tag    string  `json:"tag"`
+	Weight float64 `json:"weight"`
 }
 
 type PromptModel struct {
-	Filename   string
-	Multiplier float64
+	Filename   string  `json:"filename"`
+	Multiplier float64 `json:"multiplier"`
 }
 
 type ParsedPrompt struct {
-	Tags      []*PromptTag
-	Loras     []*PromptModel
-	Hypernets []*PromptModel
+	Tags      []*PromptTag   `json:"tags"`
+	Loras     []*PromptModel `json:"loras"`
+	Hypernets []*PromptModel `json:"hypernets"`
 }

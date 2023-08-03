@@ -5,7 +5,7 @@ Stable Diffusion Prompt Parser
 ## Installation
 
 ```bash
-go get -u github.com/junte/stable-diffusion-prompt-parser 
+$ go get -u github.com/junte/stable-diffusion-prompt-parser 
 ```
 
 ## Supported prompt syntax
@@ -31,9 +31,9 @@ func main() {
     parsed, err := parser.ParsePrompt(prompt)
 }
 ```
+parsed:
 
 ```json
-# parsed
 {
   "Tags": [
     {
@@ -77,7 +77,33 @@ func main() {
     beautified, err := parser.BeautifyPrompt(prompt)
 }
 ```
+beautified:
 ```
-# beautified
 landscape, moon (realistic, detailed:1.5) <hypernet:file:1.5>
+```
+
+## Build
+Use following make rules for building 
+```bash
+## macos arm64
+$ make build-mac 
+
+## linux amd64
+$ make build-linux
+```
+or use following command to build for desirable platform (use valid combinations of $GOOS and $GOARCH from here: https://go.dev/doc/install/source#environment)
+
+```bash
+$ GOOS=linux GOARCH=386 go build -ldflags "-s -w" -o bin/parse main.go
+```
+
+
+### Usage
+```bash
+$ ./bin/parse < <(echo "landscape from the Moon, (realistic, detailed:1.5), <lora:file>, <hypernet:file:1.5>")
+
+# or
+
+$ ./bin/parse 
+$ landscape,,,, moon, ( realistic,detailed:1, 5), <hypernet:file:1. 5>
 ```
