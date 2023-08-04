@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"strings"
 
 	"github.com/junte/stable-diffusion-prompt-parser/src/parser"
 )
@@ -60,11 +61,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	regex := regexp.MustCompile(` ?<.*> ?`)
+	regex := regexp.MustCompile(`,? ?<[^>]*>,? ?`)
+	cleaned := regex.ReplaceAllString(beautified, ", ")
 	output := Output{
 		Evaluated:  parsed,
 		Beautified: beautified,
-		Cleaned:    regex.ReplaceAllString(beautified, ", "),
+		Cleaned:    strings.Trim(cleaned, ", "),
 	}
 
 	marshalled, err := toIndentedJson(&output, "", "  ")

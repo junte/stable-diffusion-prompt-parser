@@ -1,6 +1,17 @@
 package parser
 
-import "fmt"
+import (
+	"fmt"
+	"regexp"
+)
+
+func truncateZero(input string) string {
+	if input[0] == '0' {
+		return input[1:]
+	}
+
+	return input
+}
 
 func (parser *PromptParser) contentsToString(contents []*prompt) (result string) {
 	var lastPromptIsTag bool
@@ -20,13 +31,13 @@ func (parser *PromptParser) contentsToString(contents []*prompt) (result string)
 		case customWeight:
 			result += "(" + parser.contentsToString(content.contents)
 			if content.weight != 0 {
-				result += ":" + fmt.Sprintf("%v", content.weight)
+				result += ":" + truncateZero(fmt.Sprintf("%v", content.weight))
 			}
 			result += ")"
 		case lora, hypernet:
 			result += "<" + content.kind + ":" + content.filename
 			if content.multiplier != 0 {
-				result += ":" + fmt.Sprintf("%v", content.multiplier)
+				result += ":" + truncateZero(fmt.Sprintf("%v", content.multiplier))
 			}
 			result += ">"
 		default:
@@ -35,6 +46,14 @@ func (parser *PromptParser) contentsToString(contents []*prompt) (result string)
 
 		lastPromptIsTag = content.kind == tag
 	}
+
+	regex := regexp.MustCompile(`( [<(\[])`)
+	result = regex.ReplaceAllString(result, ",$1")
+
+	regex = regexp.MustCompile(`([>)\]] )`)
+	result = regex.ReplaceAllStringFunc(result, func(entry string) string {
+		return entry[:1] + ", "
+	})
 
 	return result
 }
