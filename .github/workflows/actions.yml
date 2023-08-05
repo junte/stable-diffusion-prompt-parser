@@ -5,7 +5,7 @@ on:
     branches: [ "master" ]
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repo
@@ -29,3 +29,14 @@ jobs:
 
     - name: Test
       run: make test
+
+    - if: ${{ success() }}
+      name: Build
+      run: make build
+
+    - if: ${{ success() }}
+      name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: build
+        path: bin
