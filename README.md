@@ -83,27 +83,14 @@ landscape, moon (realistic, detailed:1.5) <hypernet:file:1.5>
 ```
 
 ## Build
-Use following make rules for building 
+Use following make rules for build binary and run 
 ```bash
-## macos arm64
-$ make build-mac 
-
-## linux amd64
-$ make build-linux
+$ make build
+$ ./bin/linux-amd64/parse < <(echo "landscape from the Moon")
+$ ./bin/mac-arm64/parse < <(echo "landscape from the Moon")
 ```
-or use following command to build for desirable platform (use valid combinations of $GOOS and $GOARCH from here: https://go.dev/doc/install/source#environment)
+Or use following command to build binary for desirable platform (use valid combinations of $GOOS and $GOARCH from here: https://go.dev/doc/install/source#environment)
 
 ```bash
 $ GOOS=linux GOARCH=386 go build -ldflags "-s -w" -o bin/parse main.go
-```
-
-
-### Usage
-```bash
-$ ./bin/parse < <(echo "landscape from the Moon, (realistic, detailed:1.5), <lora:file>, <hypernet:file:1.5>")
-
-# or
-
-$ ./bin/parse 
-$ landscape,,,, moon, ( realistic,detailed:1, 5), <hypernet:file:1. 5>
 ```
