@@ -44,9 +44,16 @@ func toIndentedJson(output *Output, prefix string, indent string) ([]byte, error
 
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Scan()
 
-	input := scanner.Text()
+	var input string
+	for scanner.Scan() {
+		input += scanner.Text()
+	}
+	if err := scanner.Err(); err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		os.Exit(1)
+	}
+
 	parser := parser.NewPromptParser()
 
 	parsed, err := parser.ParsePrompt(input)
