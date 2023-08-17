@@ -6,11 +6,11 @@ import (
 	"math"
 	"reflect"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 
 	"github.com/junte/stable-diffusion-prompt-parser/src/reader"
-	"github.com/samber/lo"
 )
 
 func (parser *PromptParser) escapeToken(token string) string {
@@ -22,7 +22,8 @@ func (parser *PromptParser) parseTagPrompt(reader *reader.TokenReader) (*prompt,
 	invalidTokens := []string{"(", ")", "[", "]", "<", ">", ":", ",", "|", ""}
 	for {
 		token := reader.GetToken()
-		if lo.Contains(invalidTokens, token) {
+
+		if slices.Contains(invalidTokens, token) {
 			break
 		}
 
