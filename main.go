@@ -47,7 +47,10 @@ func main() {
 
 	var input string
 	for scanner.Scan() {
-		input += scanner.Text()
+		line := scanner.Text()
+		if len(line) > 0 {
+			input += line + " "
+		}
 	}
 	if err := scanner.Err(); err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
