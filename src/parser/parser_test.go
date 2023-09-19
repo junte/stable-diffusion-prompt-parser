@@ -580,6 +580,7 @@ func TestPromptToString(t *testing.T) {
 		{"< lora : file name : .5 >", "<lora:file name:.5>"},
 		{"< hypernet : file name>", "<hypernet:file name>"},
 		{"abc <lora:filename> mno xyz", "abc, <lora:filename>, mno xyz"},
+		{"(abc,, <lora:filename>,, <lora:filename>)", "(abc, <lora:filename>, <lora:filename>)"},
 	}
 
 	parser := NewPromptParser()

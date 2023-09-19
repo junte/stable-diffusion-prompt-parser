@@ -86,11 +86,12 @@ landscape, moon (realistic, detailed:1.5) <hypernet:file:1.5>
 Use following make rules for build binary and run 
 ```bash
 $ make build
-$ ./bin/linux-amd64/parse < <(echo "landscape from the Moon")
-$ ./bin/mac-arm64/parse < <(echo "landscape from the Moon")
+$ ./bin/prompt_linux_x64 < <(echo "landscape from the Moon")
+$ ./bin/prompt_mac_amd64 < <(echo "landscape from the Moon")
+$ ./bin/prompt_mac_arm64 < <(echo "landscape from the Moon")
 ```
 Or use following command to build binary for desirable platform (use valid combinations of $GOOS and $GOARCH from here: https://go.dev/doc/install/source#environment)
 
 ```bash
-$ GOOS=linux GOARCH=386 go build -ldflags "-s -w" -o bin/parse main.go
+$ GOOS=linux GOARCH=386 go build -ldflags "-s -w" -o bin/prompt main.go
 ```

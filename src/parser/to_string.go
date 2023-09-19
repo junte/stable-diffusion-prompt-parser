@@ -47,6 +47,12 @@ func (parser *PromptParser) contentsToString(contents []*prompt) (result string)
 		lastPromptIsTag = content.kind == tag
 	}
 
+	return result
+}
+
+func (parser *PromptParser) toString(prompt *prompt) string {
+	result := parser.contentsToString(prompt.contents)
+
 	regex := regexp.MustCompile(`( [<(\[])`)
 	result = regex.ReplaceAllString(result, ",$1")
 
@@ -56,8 +62,4 @@ func (parser *PromptParser) contentsToString(contents []*prompt) (result string)
 	})
 
 	return result
-}
-
-func (parser *PromptParser) toString(prompt *prompt) string {
-	return parser.contentsToString(prompt.contents)
 }
