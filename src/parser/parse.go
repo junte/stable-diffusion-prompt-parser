@@ -193,8 +193,14 @@ func (parser *PromptParser) parseNumber(reader *reader.TokenReader, name string)
 		return 0, err
 	}
 
-	token = strings.ReplaceAll(token, ",", ".")
+	token = strings.TrimSpace(token)
 	token = strings.ReplaceAll(token, " ", "")
+	token = strings.ReplaceAll(token, ",", ".")
+	matches := regexp.MustCompile(`(\d+)[\.\, ]+(\d+)`).FindStringSubmatch(token)
+	if len(matches) > 0 {
+		token = matches[1] + "." + matches[2]
+	}
+
 	number, err = strconv.ParseFloat(token, 64)
 	if err != nil {
 		return 0, fmt.Errorf(fmt.Sprintf("Incorrect %s format: %s", strings.ToLower(name), token))

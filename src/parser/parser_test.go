@@ -269,6 +269,7 @@ func TestParseNumber(t *testing.T) {
 		{"1. 5", 1.5},
 		{"0,5", 0.5},
 		{"0, 5", 0.5},
+		{".1.5", 1.5},
 	}
 
 	parser := NewPromptParser()
@@ -492,6 +493,12 @@ func TestParsePrompt(t *testing.T) {
 			"<lora:file:0.5>",
 			ParsedPrompt{
 				Loras: []*PromptModel{{Filename: "file", Multiplier: 0.5}},
+			},
+		},
+		{
+			"<lora:file:.1.5>",
+			ParsedPrompt{
+				Loras: []*PromptModel{{Filename: "file", Multiplier: 1.5}},
 			},
 		},
 		{
