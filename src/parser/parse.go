@@ -13,6 +13,8 @@ import (
 	"github.com/junte/stable-diffusion-prompt-parser/src/reader"
 )
 
+const DefaultMultiplier = 0.5
+
 func (parser *PromptParser) escapeToken(token string) string {
 	return regexp.MustCompile(`\\(.)`).ReplaceAllString(token, "$1")
 }
@@ -188,6 +190,11 @@ func (parser *PromptParser) parseNumber(reader *reader.TokenReader, name string)
 		}
 	}
 
+	switch reader.GetToken() {
+	case ")", ">", ":":
+		return DefaultMultiplier, nil
+	}
+
 	token, err := parser.parseContentToken(reader, name)
 	if err != nil {
 		return 0, err
@@ -203,7 +210,7 @@ func (parser *PromptParser) parseNumber(reader *reader.TokenReader, name string)
 
 	number, err = strconv.ParseFloat(token, 64)
 	if err != nil {
-		return 0, fmt.Errorf(fmt.Sprintf("Incorrect %s format: %s", strings.ToLower(name), token))
+		number = DefaultMultiplier
 	}
 
 	reader.NextToken()
@@ -244,8 +251,9 @@ func (parser *PromptParser) parseAnglePrompt(reader *reader.TokenReader, kind st
 	if reader.GetToken() == ">" {
 		reader.NextToken()
 		return &prompt{
-			kind:     kind,
-			filename: filename,
+			kind:       kind,
+			filename:   filename,
+			multiplier: DefaultMultiplier,
 		}, nil
 	}
 	reader.NextToken()
@@ -335,9 +343,7 @@ func (parser *PromptParser) parse(input string) (*prompt, error) {
 	reader := reader.NewTokenReader(input)
 
 	for {
-		token := reader.GetToken()
-
-		switch token {
+		switch reader.GetToken() {
 		case ")", "]", ">", ":":
 			reader.NextToken()
 			continue
