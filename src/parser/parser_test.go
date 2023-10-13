@@ -294,8 +294,9 @@ func TestParseAnglePrompt(t *testing.T) {
 			"<lora:file>",
 			"lora",
 			prompt{
-				kind:     "lora",
-				filename: "file",
+				kind:       "lora",
+				filename:   "file",
+				multiplier: 0.5,
 			},
 		},
 		{
@@ -318,6 +319,24 @@ func TestParseAnglePrompt(t *testing.T) {
 		},
 		{
 			"<lora:file.name-v.1.5:.5>",
+			"lora",
+			prompt{
+				kind:       "lora",
+				filename:   "file.name-v.1.5",
+				multiplier: 0.5,
+			},
+		},
+		{
+			"<lora:file.name-v.1.5:.>",
+			"lora",
+			prompt{
+				kind:       "lora",
+				filename:   "file.name-v.1.5",
+				multiplier: 0.5,
+			},
+		},
+		{
+			"<lora:file.name-v.1.5:>",
 			"lora",
 			prompt{
 				kind:       "lora",
@@ -358,8 +377,9 @@ func TestParsePromptContent(t *testing.T) {
 			"<lora:file>",
 			true,
 			prompt{
-				kind:     "lora",
-				filename: "file",
+				kind:       "lora",
+				filename:   "file",
+				multiplier: 0.5,
 			},
 		},
 		{
@@ -484,9 +504,36 @@ func TestParsePrompt(t *testing.T) {
 			},
 		},
 		{
+			"(abc: xyz)",
+			ParsedPrompt{
+				Tags: []*PromptTag{
+					{
+						Tag:    "abc",
+						Weight: 1.1,
+					},
+					{
+						Tag:    "xyz",
+						Weight: 1.1,
+					},
+				},
+			},
+		},
+		{
 			"<lora:file>",
 			ParsedPrompt{
-				Loras: []*PromptModel{{Filename: "file", Multiplier: 1}},
+				Loras: []*PromptModel{{Filename: "file", Multiplier: 0.5}},
+			},
+		},
+		{
+			"<lora:file:>",
+			ParsedPrompt{
+				Loras: []*PromptModel{{Filename: "file", Multiplier: 0.5}},
+			},
+		},
+		{
+			"<lora:file:.>",
+			ParsedPrompt{
+				Loras: []*PromptModel{{Filename: "file", Multiplier: 0.5}},
 			},
 		},
 		{
@@ -504,7 +551,7 @@ func TestParsePrompt(t *testing.T) {
 		{
 			"<hypernet:file>",
 			ParsedPrompt{
-				Hypernets: []*PromptModel{{Filename: "file", Multiplier: 1}},
+				Hypernets: []*PromptModel{{Filename: "file", Multiplier: 0.5}},
 			},
 		},
 		{
@@ -539,7 +586,7 @@ func TestParsePrompt(t *testing.T) {
 				Hypernets: []*PromptModel{
 					{
 						Filename:   "file",
-						Multiplier: 1,
+						Multiplier: 0.5,
 					},
 				},
 			},
@@ -585,9 +632,9 @@ func TestPromptToString(t *testing.T) {
 		{"(abc) [xyz]", "(abc), [xyz]"},
 		{"(abc)mno[xyz]", "(abc), mno, [xyz]"},
 		{"< lora : file name : .5 >", "<lora:file name:.5>"},
-		{"< hypernet : file name>", "<hypernet:file name>"},
-		{"abc <lora:filename> mno xyz", "abc, <lora:filename>, mno xyz"},
-		{"(abc,, <lora:filename>,, <lora:filename>)", "(abc, <lora:filename>, <lora:filename>)"},
+		{"< hypernet : file name>", "<hypernet:file name:.5>"},
+		{"abc <lora:filename> mno xyz", "abc, <lora:filename:.5>, mno xyz"},
+		{"(abc,, <lora:filename>,, <lora:filename>)", "(abc, <lora:filename:.5>, <lora:filename:.5>)"},
 	}
 
 	parser := NewPromptParser()
