@@ -72,6 +72,25 @@ func (parser *PromptParser) parsePositivePrompt(reader *reader.TokenReader) (*pr
 
 		// RECOVER: (a:b)
 		reader.NextToken()
+
+		token := reader.GetToken()
+		token = strings.TrimSpace(token)
+		token = strings.ReplaceAll(token, " ", "")
+		token = strings.ReplaceAll(token, ",", ".")
+		matches := regexp.MustCompile(`(\d+)[\.\, ]+(\d+)`).FindStringSubmatch(token)
+		if len(matches) > 0 {
+			token = matches[1] + "." + matches[2]
+		}
+
+		if weight, err := strconv.ParseFloat(token, 64); err == nil {
+			reader.NextToken()
+			return &prompt{
+				kind:     customWeight,
+				weight:   weight,
+				contents: contents,
+			}, nil
+		}
+
 		newContents, err := parser.parsePromptContents(reader, false)
 		if err != nil {
 			return &prompt{}, fmt.Errorf("%v", err)

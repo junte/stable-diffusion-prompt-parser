@@ -147,6 +147,34 @@ func TestParsePositivePrompt(t *testing.T) {
 			},
 		},
 		{
+			"(abc:.1.5)",
+			prompt{
+				kind:   "cw",
+				weight: 1.5,
+				contents: []*prompt{
+					{
+						kind:   "tag",
+						name:   "abc",
+						tokens: []string{"abc"},
+					},
+				},
+			},
+		},
+		{
+			"(abc:1.5.1)",
+			prompt{
+				kind:   "cw",
+				weight: 1.5,
+				contents: []*prompt{
+					{
+						kind:   "tag",
+						name:   "abc",
+						tokens: []string{"abc"},
+					},
+				},
+			},
+		},
+		{
 			"(abc:1.5, xyz)",
 			prompt{
 				kind:   "cw",
@@ -269,7 +297,9 @@ func TestParseNumber(t *testing.T) {
 		{"1. 5", 1.5},
 		{"0,5", 0.5},
 		{"0, 5", 0.5},
+		{"1..5", 1.5},
 		{".1.5", 1.5},
+		{"1.5.1", 1.5},
 	}
 
 	parser := NewPromptParser()
@@ -324,6 +354,33 @@ func TestParseAnglePrompt(t *testing.T) {
 				kind:       "lora",
 				filename:   "file.name-v.1.5",
 				multiplier: 0.5,
+			},
+		},
+		{
+			"<lora:file.name-v.1.5:1..5>",
+			"lora",
+			prompt{
+				kind:       "lora",
+				filename:   "file.name-v.1.5",
+				multiplier: 1.5,
+			},
+		},
+		{
+			"<lora:file.name-v.1.5:.1.5>",
+			"lora",
+			prompt{
+				kind:       "lora",
+				filename:   "file.name-v.1.5",
+				multiplier: 1.5,
+			},
+		},
+		{
+			"<lora:file.name-v.1.5:1.5.1>",
+			"lora",
+			prompt{
+				kind:       "lora",
+				filename:   "file.name-v.1.5",
+				multiplier: 1.5,
 			},
 		},
 		{
@@ -628,6 +685,8 @@ func TestPromptToString(t *testing.T) {
 		{"( (abc ) )", "((abc))"},
 		{"[ [abc ] ]", "[[abc]]"},
 		{"(abc:)", "(abc)"},
+		{"(abc:.1.5)", "(abc:1.5)"},
+		{"(abc:1.5.1)", "(abc:1.5)"},
 		{"( abc : 1, 5 )", "(abc:1.5)"},
 		{"(abc) [xyz]", "(abc), [xyz]"},
 		{"(abc)mno[xyz]", "(abc), mno, [xyz]"},
@@ -635,6 +694,8 @@ func TestPromptToString(t *testing.T) {
 		{"< hypernet : file name>", "<hypernet:file name:.5>"},
 		{"abc <lora:filename> mno xyz", "abc, <lora:filename:.5>, mno xyz"},
 		{"(abc,, <lora:filename>,, <lora:filename>)", "(abc, <lora:filename:.5>, <lora:filename:.5>)"},
+		{"<lora:file.name:.1.5>", "<lora:file.name:1.5>"},
+		{"<lora:file.name:1.5.1>", "<lora:file.name:1.5>"},
 	}
 
 	parser := NewPromptParser()
