@@ -14,6 +14,7 @@ import (
 )
 
 const DefaultMultiplier = 0.5
+const DefaultWeight = 1
 
 func (parser *PromptParser) escapeToken(token string) string {
 	return regexp.MustCompile(`\\(.)`).ReplaceAllString(token, "$1")
@@ -70,7 +71,6 @@ func (parser *PromptParser) parsePositivePrompt(reader *reader.TokenReader) (*pr
 			break
 		}
 
-		// RECOVER: (a:b)
 		reader.NextToken()
 
 		token := reader.GetToken()
@@ -91,6 +91,7 @@ func (parser *PromptParser) parsePositivePrompt(reader *reader.TokenReader) (*pr
 			}, nil
 		}
 
+		// RECOVER: (a:b)
 		newContents, err := parser.parsePromptContents(reader, false)
 		if err != nil {
 			return &prompt{}, fmt.Errorf("%v", err)
@@ -211,7 +212,12 @@ func (parser *PromptParser) parseNumber(reader *reader.TokenReader, name string)
 
 	switch reader.GetToken() {
 	case ")", ">", ":":
-		return DefaultMultiplier, nil
+		switch name {
+		case "multiplier":
+			return DefaultMultiplier, nil
+		case "weight":
+			return DefaultWeight, nil
+		}
 	}
 
 	token, err := parser.parseContentToken(reader, name)
@@ -229,7 +235,12 @@ func (parser *PromptParser) parseNumber(reader *reader.TokenReader, name string)
 
 	number, err = strconv.ParseFloat(token, 64)
 	if err != nil {
-		number = DefaultMultiplier
+		switch name {
+		case "multiplier":
+			number = DefaultMultiplier
+		case "weight":
+			number = DefaultWeight
+		}
 	}
 
 	reader.NextToken()
