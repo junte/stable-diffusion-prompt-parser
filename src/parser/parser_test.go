@@ -161,7 +161,7 @@ func TestParsePositivePrompt(t *testing.T) {
 			},
 		},
 		{
-			"(abc:1.5.1)",
+			"(abc:1.5.2)",
 			prompt{
 				kind:   "cw",
 				weight: 1.5,
@@ -312,7 +312,7 @@ func TestParseNumber(t *testing.T) {
 		{"0, 5", 0.5},
 		{"1..5", 1.5},
 		{".1.5", 1.5},
-		{"1.5.1", 1.5},
+		{"1.5.2", 1.5},
 	}
 
 	parser := NewPromptParser()
@@ -388,7 +388,7 @@ func TestParseAnglePrompt(t *testing.T) {
 			},
 		},
 		{
-			"<lora:file.name-v.1.5:1.5.1>",
+			"<lora:file.name-v.1.5:1.5.2>",
 			"lora",
 			prompt{
 				kind:       "lora",
@@ -711,7 +711,7 @@ func TestPromptToString(t *testing.T) {
 		{"[ [abc ] ]", "[[abc]]"},
 		{"(abc:)", "(abc)"},
 		{"(abc:.1.5)", "(abc:1.5)"},
-		{"(abc:1.5.1)", "(abc:1.5)"},
+		{"(abc:1.5.2)", "(abc:1.5)"},
 		{"( abc : 1, 5 )", "(abc:1.5)"},
 		{"(abc) [xyz]", "(abc), [xyz]"},
 		{"(abc)mno[xyz]", "(abc), mno, [xyz]"},
@@ -720,7 +720,7 @@ func TestPromptToString(t *testing.T) {
 		{"abc <lora:filename> mno xyz", "abc, <lora:filename:.5>, mno xyz"},
 		{"(abc,, <lora:filename>,, <lora:filename>)", "(abc, <lora:filename:.5>, <lora:filename:.5>)"},
 		{"<lora:file.name:.1.5>", "<lora:file.name:1.5>"},
-		{"<lora:file.name:1.5.1>", "<lora:file.name:1.5>"},
+		{"<lora:file.name:1.5.2>", "<lora:file.name:1.5>"},
 	}
 
 	parser := NewPromptParser()
