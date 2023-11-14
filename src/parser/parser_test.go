@@ -526,6 +526,12 @@ func TestParsePrompt(t *testing.T) {
 			},
 		},
 		{
+			"(abc:1.5.2)",
+			ParsedPrompt{
+				Tags: []*PromptTag{{Tag: "abc", Weight: 1.5}},
+			},
+		},
+		{
 			"[abc]",
 			ParsedPrompt{
 				Tags: []*PromptTag{{Tag: "abc", Weight: 0.9090909090909091}},
@@ -614,6 +620,12 @@ func TestParsePrompt(t *testing.T) {
 		},
 		{
 			"<lora:file:.1.5>",
+			ParsedPrompt{
+				Loras: []*PromptModel{{Filename: "file", Multiplier: 1.5}},
+			},
+		},
+		{
+			"<lora:file:1.5.2>",
 			ParsedPrompt{
 				Loras: []*PromptModel{{Filename: "file", Multiplier: 1.5}},
 			},
