@@ -161,6 +161,34 @@ func TestParsePositivePrompt(t *testing.T) {
 			},
 		},
 		{
+			"(abc:1..5)",
+			prompt{
+				kind:   "cw",
+				weight: 1.5,
+				contents: []*prompt{
+					{
+						kind:   "tag",
+						name:   "abc",
+						tokens: []string{"abc"},
+					},
+				},
+			},
+		},
+		{
+			"(abc:1.5.)",
+			prompt{
+				kind:   "cw",
+				weight: 1.5,
+				contents: []*prompt{
+					{
+						kind:   "tag",
+						name:   "abc",
+						tokens: []string{"abc"},
+					},
+				},
+			},
+		},
+		{
 			"(abc:1.5.2)",
 			prompt{
 				kind:   "cw",
