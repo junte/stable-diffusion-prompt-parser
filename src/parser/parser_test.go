@@ -312,6 +312,7 @@ func TestParseNumber(t *testing.T) {
 		{"0, 5", 0.5},
 		{"1..5", 1.5},
 		{".1.5", 1.5},
+		{"1.5.", 1.5},
 		{"1.5.2", 1.5},
 	}
 
@@ -380,6 +381,15 @@ func TestParseAnglePrompt(t *testing.T) {
 		},
 		{
 			"<lora:file.name-v.1.5:.1.5>",
+			"lora",
+			prompt{
+				kind:       "lora",
+				filename:   "file.name-v.1.5",
+				multiplier: 1.5,
+			},
+		},
+		{
+			"<lora:file.name-v.1.5:1.5.>",
 			"lora",
 			prompt{
 				kind:       "lora",
@@ -526,6 +536,18 @@ func TestParsePrompt(t *testing.T) {
 			},
 		},
 		{
+			"(abc:1..5)",
+			ParsedPrompt{
+				Tags: []*PromptTag{{Tag: "abc", Weight: 1.5}},
+			},
+		},
+		{
+			"(abc:1.5.)",
+			ParsedPrompt{
+				Tags: []*PromptTag{{Tag: "abc", Weight: 1.5}},
+			},
+		},
+		{
 			"(abc:1.5.2)",
 			ParsedPrompt{
 				Tags: []*PromptTag{{Tag: "abc", Weight: 1.5}},
@@ -625,6 +647,18 @@ func TestParsePrompt(t *testing.T) {
 			},
 		},
 		{
+			"<lora:file:1..5>",
+			ParsedPrompt{
+				Loras: []*PromptModel{{Filename: "file", Multiplier: 1.5}},
+			},
+		},
+		{
+			"<lora:file:1.5.>",
+			ParsedPrompt{
+				Loras: []*PromptModel{{Filename: "file", Multiplier: 1.5}},
+			},
+		},
+		{
 			"<lora:file:1.5.2>",
 			ParsedPrompt{
 				Loras: []*PromptModel{{Filename: "file", Multiplier: 1.5}},
@@ -688,6 +722,17 @@ func TestParsePrompt(t *testing.T) {
 				},
 			},
 		},
+		{
+			"abc, <lora",
+			ParsedPrompt{
+				Tags: []*PromptTag{
+					{
+						Tag:    "abc",
+						Weight: 1,
+					},
+				},
+			},
+		},
 	}
 
 	parser := NewPromptParser()
@@ -711,6 +756,9 @@ func TestPromptToString(t *testing.T) {
 		{"[ [abc ] ]", "[[abc]]"},
 		{"(abc:)", "(abc)"},
 		{"(abc:.1.5)", "(abc:1.5)"},
+		{"(abc:.0.5)", "(abc:.5)"},
+		{"(abc:1.5.)", "(abc:1.5)"},
+		{"(abc:1..5)", "(abc:1.5)"},
 		{"(abc:1.5.2)", "(abc:1.5)"},
 		{"( abc : 1, 5 )", "(abc:1.5)"},
 		{"(abc) [xyz]", "(abc), [xyz]"},
@@ -720,6 +768,9 @@ func TestPromptToString(t *testing.T) {
 		{"abc <lora:filename> mno xyz", "abc, <lora:filename:.5>, mno xyz"},
 		{"(abc,, <lora:filename>,, <lora:filename>)", "(abc, <lora:filename:.5>, <lora:filename:.5>)"},
 		{"<lora:file.name:.1.5>", "<lora:file.name:1.5>"},
+		{"<lora:file.name:.0.5>", "<lora:file.name:.5>"},
+		{"<lora:file.name:1.5.>", "<lora:file.name:1.5>"},
+		{"<lora:file.name:1..5>", "<lora:file.name:1.5>"},
 		{"<lora:file.name:1.5.2>", "<lora:file.name:1.5>"},
 	}
 
